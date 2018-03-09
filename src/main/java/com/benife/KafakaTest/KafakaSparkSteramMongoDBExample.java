@@ -16,7 +16,8 @@ import org.apache.spark.streaming.api.java.*;
 import org.apache.spark.streaming.kafka010.*;
 import org.bson.Document;
 import com.mongodb.DBObject;
-
+import com.benife.KafakaTest.DeviceA.Data;
+import com.benife.KafakaTest.DeviceA.Header;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,7 +83,7 @@ public class KafakaSparkSteramMongoDBExample  implements java.io.Serializable {
             	ObjectMapper mapper = new ObjectMapper();
             	Device device = mapper.readValue(dump, Device.class);
             	
-                if(device.getDevice_id().equals("awJo6rH")){
+                if(device.getHeader().getCommand().equals("abStatus")){
             		System.out.println("contains!!!");
                         return true;
                 }
@@ -99,10 +100,6 @@ public class KafakaSparkSteramMongoDBExample  implements java.io.Serializable {
 					@Override
                      public void call(String s) throws Exception {
                     	 System.out.println("!!!!final Data:" + s);
-                    	 
-                     	//Document doc = new Document("name", "test")
-                          //      .append("data", "aaaaa");
-                              //documentMongoCollection.insertOne(doc);
                     	 storeData(s);
                      }
                  });
@@ -167,14 +164,12 @@ public class KafakaSparkSteramMongoDBExample  implements java.io.Serializable {
     	Device device;
 		try {
 			device = mapper.readValue(paramT, Device.class);
-			
-	    	Document doc = new Document("device_id", device.getDevice_id())
-	                .append("last_event", 
-	                		new Document("has_sound", device.getLast_event().getHas_sound())
-	                		.append("has_motion", device.getLast_event().getHas_motion())
-	                		.append("has_person", device.getLast_event().getHas_person())
-	                		.append("start_time", device.getLast_event().getStart_time())
-	                		.append("end_time", device.getLast_event().getEnd_time()));
+						
+	    	Document doc = new Document();
+	    	doc.append("header",new Document("command", device.getHeader().getCommand())
+		                		.append("sourceDeviceId", device.getHeader().getSourceDeviceId())
+		                		.append("has_person", device.getHeader().getTargetDeviceId()));
+	        doc.append("data",new Document("errorCode", device.getData().getErrorCode()));
 	    	
 	    	documentMongoCollection.insertOne(doc);
 	    	
@@ -197,85 +192,77 @@ public class KafakaSparkSteramMongoDBExample  implements java.io.Serializable {
 
 class Device
 {
-private String device_id;
-	
-	public static class Last_event {
-		private boolean has_sound;
-		private boolean has_motion;
-		private boolean has_person;
-		private String start_time;
-		private String end_time;
+	public static class Header {
+		private String command;
+		private String sourceDeviceId;
+		private String targetDeviceId;
 		
-		public boolean getHas_sound()
+		public String getCommand()
 		{
-			return has_sound;
+			return command;
 		}
 		
-		public boolean getHas_motion()
+		public String getSourceDeviceId()
 		{
-			return has_motion;
+			return sourceDeviceId;
 		}
 		
-		public boolean getHas_person()
+		public String getTargetDeviceId()
 		{
-			return has_person;
+			return targetDeviceId;
 		}
 		
-		public String getStart_time()
+		public void setCommand(String s)
 		{
-			return start_time;
+			command = s;
 		}
 		
-		public String getEnd_time()
+		public void setSourceDeviceId(String s)
 		{
-			return end_time;
+			sourceDeviceId = s;
 		}
 		
-		public void setHas_sound(boolean b)
+		public void setTargetDeviceId(String s)
 		{
-			has_sound = b;
-		}
-		
-		public void setHas_motion(boolean b)
-		{
-			has_motion = b;
-		}
-		
-		public void setHas_person(boolean b)
-		{
-			has_person= b;
-		}
-		
-		public void setStart_time(String t)
-		{
-			start_time = t;
-		}
-		
-		public void setEnd_time(String t)
-		{
-			end_time = t;
+			targetDeviceId= s;
 		}
 	}
 	
-	public String getDevice_id()
+	public static class Data {
+		private String errorCode;
+		
+		public String getErrorCode()
+		{
+			return errorCode;
+		}
+		
+				
+		public void setErrorCode(String s)
+		{
+			errorCode = s;
+		}
+	}
+		
+	private Header header;
+	private Data data;
+	
+	public Header getHeader()
 	{
-		return device_id;
+		return header;
 	}
 	
-	public void setDevice_id(String t)
+	public void setHeader(Header h)
 	{
-		device_id = t;
+		header = h;
 	}
 	
-	private Last_event last_event;
-	
-	public Last_event getLast_event()
+	public Data getData()
 	{
-		return last_event;
+		return data;
 	}
 	
-	public void setLast_event(Last_event t)
+	public void setData(Data d)
 	{
-		last_event = t;
+		data = d;
 	}
 }

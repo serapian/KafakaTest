@@ -6,31 +6,27 @@ public class JSONTest {
 	
 	public static void main(String[] args) throws Exception 
 	{
-		String json = "{" + 
-				"    \"device_id\": \"awJo6rH...\"," + 
-				"    \"last_event\": {" + 
-				"      \"has_sound\": false," + 
-				"      \"has_motion\": true," + 
-				"      \"has_person\": false," + 
-				"      \"start_time\": \"2016-12-29T00:00:00.000Z\"," + 
-				"      \"end_time\": \"2016-12-29T18:42:00.000Z\"" + 
-				"    }" + 
-				"}";
+		String json = "{" 
+				+ "\"header\" : {" 
+		        + "\"command\" : \"abStatus\","
+		        + "\"sourceDeviceId\" : \"P_22340\","
+		        + "\"targetDeviceId\" : \"G_12345\""
+		        + "},"
+		        + "\"data\" : {"
+		        + "\"errorCode\" : 101"
+		        + "}"
+				+ "}";
+		
 		
 
     	ObjectMapper mapper = new ObjectMapper();
 		DeviceA device = mapper.readValue(json, DeviceA.class);
 		
-		System.out.println(device.getDevice_id());
-		System.out.println(device.getLast_event().getHas_sound());
-		System.out.println(device.getLast_event().getHas_motion());
-		System.out.println(device.getLast_event().getHas_person());
-		System.out.println(device.getLast_event().getStart_time());
-		System.out.println(device.getLast_event().getEnd_time());
+		System.out.println(device.getHeader().getCommand());
+		System.out.println(device.getHeader().getSourceDeviceId());
+		System.out.println(device.getHeader().getTargetDeviceId());
+		System.out.println(device.getData().getErrorCode());
 		
-		
-    	
-        //if(device.getDevice_id().equals("awJo6rH")){
 				
 	}
 
@@ -38,86 +34,78 @@ public class JSONTest {
 
 
 class DeviceA
-{
-	private String device_id;
-	
-	public static class Last_event {
-		private boolean has_sound;
-		private boolean has_motion;
-		private boolean has_person;
-		private String start_time;
-		private String end_time;
+{	
+	public static class Header {
+		private String command;
+		private String sourceDeviceId;
+		private String targetDeviceId;
 		
-		public boolean getHas_sound()
+		public String getCommand()
 		{
-			return has_sound;
+			return command;
 		}
 		
-		public boolean getHas_motion()
+		public String getSourceDeviceId()
 		{
-			return has_motion;
+			return sourceDeviceId;
 		}
 		
-		public boolean getHas_person()
+		public String getTargetDeviceId()
 		{
-			return has_person;
+			return targetDeviceId;
 		}
 		
-		public String getStart_time()
+		public void setCommand(String s)
 		{
-			return start_time;
+			command = s;
 		}
 		
-		public String getEnd_time()
+		public void setSourceDeviceId(String s)
 		{
-			return end_time;
+			sourceDeviceId = s;
 		}
 		
-		public void setHas_sound(boolean b)
+		public void setTargetDeviceId(String s)
 		{
-			has_sound = b;
-		}
-		
-		public void setHas_motion(boolean b)
-		{
-			has_motion = b;
-		}
-		
-		public void setHas_person(boolean b)
-		{
-			has_person= b;
-		}
-		
-		public void setStart_time(String t)
-		{
-			start_time = t;
-		}
-		
-		public void setEnd_time(String t)
-		{
-			end_time = t;
+			targetDeviceId= s;
 		}
 	}
 	
-	public String getDevice_id()
+	public static class Data {
+		private String errorCode;
+		
+		public String getErrorCode()
+		{
+			return errorCode;
+		}
+		
+				
+		public void setErrorCode(String s)
+		{
+			errorCode = s;
+		}
+	}
+		
+	private Header header;
+	private Data data;
+	
+	public Header getHeader()
 	{
-		return device_id;
+		return header;
 	}
 	
-	public void setDevice_id(String t)
+	public void setHeader(Header h)
 	{
-		device_id = t;
+		header = h;
 	}
 	
-	private Last_event last_event;
-	
-	public Last_event getLast_event()
+	public Data getData()
 	{
-		return last_event;
+		return data;
 	}
 	
-	public void setLast_event(Last_event t)
+	public void setData(Data d)
 	{
-		last_event = t;
+		data = d;
 	}
 }
