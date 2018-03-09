@@ -1,5 +1,10 @@
 package com.benife.KafakaTest;
 
+/*
+ * Kafka로 데이터 받아서 실시간 이벤트 처리(Spark Streaming) 예제
+ * 특정 ID인것만 저장
+ */
+
 import java.io.IOException;
 import java.util.*;
 import org.apache.spark.SparkConf;
@@ -11,14 +16,11 @@ import org.apache.spark.streaming.api.java.*;
 import org.apache.spark.streaming.kafka010.*;
 import org.bson.Document;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 
-import com.benife.KafakaTest.DeviceA.Last_event;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -61,15 +63,7 @@ public class KafakaSparkSteramMongoDBExample  implements java.io.Serializable {
 		    LocationStrategies.PreferConsistent(),
 		    ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams)
 		  );
-		  
-	   	    
-		//stream.mapToPair(record -> new Tuple2<>(record.key(), record.value()));
-		
-		 // Read value of each message from Kafka and return it
-		
-		final String rowData = "";
-		
-        
+		  	
         JavaDStream<String> lines = stream.map(new Function<ConsumerRecord<String,String>, String>() {
             @Override
             public String call(ConsumerRecord<String, String> kafkaRecord) throws Exception {
@@ -98,10 +92,6 @@ public class KafakaSparkSteramMongoDBExample  implements java.io.Serializable {
             }
         });
         
-
-       
-    	
-      
         filter_sample.foreachRDD(new VoidFunction<JavaRDD<String>>() {
             @Override
             public void call(JavaRDD<String> data) throws Exception {           	
@@ -149,12 +139,10 @@ public class KafakaSparkSteramMongoDBExample  implements java.io.Serializable {
          });
         
         
-
-        
         //Print the word count
         wordCount.print();
         */
-        //wordCount.foreachRDD(foreachFunc);
+       
 
         streamingContext.start();
         try {
